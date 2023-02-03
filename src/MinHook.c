@@ -17,9 +17,22 @@ MH_STATUS(WINAPI *MH_ApplyQueued)(VOID) = NULL;
 const char *(WINAPI *MH_StatusToString)(MH_STATUS status) = NULL;
 
 MH_STATUS WINAPI MH_Initialize(VOID) {
-    HMODULE minHookHandle = LoadLibraryA("minhook.x32.dll");
+    #if (defined __x86_64__) || (defined _M_X64)
+        #define MINHOOK_DLL "minhook.x64.dll"
+        HMODULE minHookHandle = LoadLibraryA("minhook.x64.dll");
 
-    if (minHookHandle == NULL) return MH_UNKNOWN;
+        if (minHookHandle == NULL) return MH_UNKNOWN;
+    #elif (defined i386) || (defined __i386__) || (defined __i386) || (defined _M_IX86)
+        HMODULE minHookHandle = LoadLibraryA("minhook.x86.dll");
+
+        if (minHookHandle == NULL) {
+            minHookHandle = LoadLibraryA("minhook.x32.dll");
+        }
+
+        if (minHookHandle == NULL) return MH_UNKNOWN;
+    #else
+        #error MinHook supports only x86 and x64 systems.
+    #endif
 
     const MH_STATUS fResult = ((MH_STATUS(WINAPI *)(VOID))(GetProcAddress(minHookHandle, "MH_Initialize")))();
 
