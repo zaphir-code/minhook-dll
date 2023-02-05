@@ -18,7 +18,6 @@ const char *(WINAPI *MH_StatusToString)(MH_STATUS status) = NULL;
 
 MH_STATUS WINAPI MH_Initialize(VOID) {
     #if (defined __x86_64__) || (defined _M_X64)
-        #define MINHOOK_DLL "minhook.x64.dll"
         HMODULE minHookHandle = LoadLibraryA("minhook.x64.dll");
 
         if (minHookHandle == NULL) return MH_UNKNOWN;
